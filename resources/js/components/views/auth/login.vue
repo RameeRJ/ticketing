@@ -3,12 +3,12 @@
       <h2>Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="email">email</label>
           <input
             type="text"
-            id="username"
-            v-model="username"
-            placeholder="Enter your username"
+            id="email"
+            v-model="email"
+            placeholder="Enter your email"
             required
           />
         </div>
@@ -30,26 +30,65 @@
   </template>
   
   <script>
-  export default {
-    data() {
-      return {
-        username: '',
-        password: '',
-      };
-    },
-    methods: {
-      handleLogin() {
-        if (this.username && this.password) {
-          alert(`Logging in as ${this.username}`);
-        
-        } else {
-          alert('Please fill in both fields');
-        }
-      },
-    },
-  };
-  </script>
-  
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+export default {
+  name: 'Login',
+  data() {
+    return {
+      email: '',
+      password: '',
+      remember: false,
+      errors: {},
+    };
+  },
+  methods: {
+  async handleLogin() { 
+    this.errors = {}; 
+
+    try {
+      const response = await axios.post('/login', {
+        email: this.email,
+        password: this.password,
+        remember: this.remember,
+      });
+
+      const user = response.data.user;
+
+    
+      localStorage.setItem('userType', user.user_type);
+      localStorage.setItem('user', JSON.stringify(user));
+
+     
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        showConfirmButton: false,
+        timer: 1000,
+        toast: true,
+        position: 'top-end',
+      });
+
+      // Redirect based on user type
+      if (user.user_type === 'admin') {
+        this.$router.push('/admin/home');
+      } else {
+        this.$router.push('/user/home');
+      }
+    } catch (error) {
+      if (error.response && error.response.data.errors) {
+        // Handle validation errors
+        this.errors = error.response.data.errors;
+      } else {
+        alert('Login failed. Please try again.');
+      }
+    }
+  },
+}
+
+};
+</script>
   <style scoped>
   .login-container {
     max-width: 400px;
