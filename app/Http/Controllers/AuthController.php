@@ -1,40 +1,62 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
+
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use App\Models\User; 
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
+        
+        $email = $request->email;
+        $password = $request->password;
 
         
-        if (Auth::attempt($credentials, $request->remember)) {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            
+            throw ValidationException::withMessages([
+                'email' => ['The provided email is incorrect.'],
+            ]);
+        }
+
+        
+        if (!Hash::check($password, $user->password)) {
+            
+            throw ValidationException::withMessages([
+                'password' => ['The provided password is incorrect.'],
+            ]);
+        }
+
+        
+        if (Auth::attempt(['email' => $email, 'password' => $password], $request->remember)) {
             $user = Auth::user();
 
-           
             return response()->json([
                 'message' => 'Login successful',
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'user_type' => $user->user_type, 
+                    'user_type' => $user->user_type,
                 ]
             ]);
         }
+
+        
         throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
+            'email' => ['Login failed. Please try again.'],
         ]);
     }
+
+
 
     public function logout(Request $request)
     {

@@ -9,8 +9,9 @@
             id="email"
             v-model="email"
             placeholder="Enter your email"
-            required
+          
           />
+          <span class="text-danger" v-if="errors.email">{{ errors.email[0] }}</span>
         </div>
   
         <div class="form-group">
@@ -20,8 +21,9 @@
             id="password"
             v-model="password"
             placeholder="Enter your password"
-            required
+            
           />
+          <span class="text-danger" v-if="errors.password">{{ errors.password[0] }}</span>
         </div>
   
         <button type="submit">Login</button>
