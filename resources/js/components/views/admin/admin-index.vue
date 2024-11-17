@@ -1,9 +1,25 @@
 <template>
-    <div class="admin-container">
-      <!-- Navbar -->
+  <div>
      
-  
-      <!-- Main Content -->
+      <nav class="navbar">
+        <div class="navbar-container">
+         
+          <div class="brand-logo-container">
+            <img src="/public/images/logo.png" alt="DocBooker Logo" class="brand-logo" />
+           
+          </div>
+          <div class="profile-logout-container">
+            <button @click="logout" class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </nav>
+      <div class="dashboard-content">
+      </div>
+    </div>
+  <div class="admin-container">
+
+     
+
       <div class="overlay">
         <div class="options-container">
           <h1>Hello Admin!</h1>
@@ -20,86 +36,68 @@
   </template>
   
   <script setup>
-  import { useRouter } from 'vue-router';
-  
-  // Use Vue Router for navigation
-  const router = useRouter();
-  
-  function goToPage(page) {
-    if (page === 'user') {
-      router.push('/admin/user'); // Navigate to the user management page
-    } else if (page === 'ticket') {
-      router.push('/admin/ticket'); // Navigate to the ticket management page
-    }
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+
+
+const router = useRouter();
+
+
+function goToPage(page) {
+  if (page === 'user') {
+    router.push('/admin/user'); 
+  } else if (page === 'ticket') {
+    router.push('/admin/ticket'); 
   }
-  </script>
+}
+
+
+async function logout() {
+  try {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will be logged out!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log me out!',
+      cancelButtonText: 'Cancel',
+      padding: '1em',
+    });
+
+    if (result.isConfirmed) {
+      await axios.post('/logout');
+      localStorage.clear();
+      router.push({ name: 'login' });
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged out successfully',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        padding: '1em',
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Logout Failed',
+      text: 'There was an error logging you out. Please try again.',
+      padding: '1em',
+    });
+  }
+}
+</script>
   
   <style scoped>
-  /* Container for the entire page */
-  .admin-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background: url('/public/images/wallpaper.png') no-repeat center center;
-    background-size: cover;
-    color: #fff; /* Text color for better visibility on the background */
-    position: relative;
-    margin:-8px;
-  }
+
+@import "/resources/css/navbar.css";
+@import "/resources/css/index.css";
+ 
   
-  /* Overlay to add a semi-transparent effect */
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark overlay */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
   
-  /* Options container */
-  .options-container {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.8); /* Light background with transparency */
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    color: #333; /* Dark text color for contrast */
-  }
-  
-  h1 {
-    margin-bottom: 10px;
-    font-size: 28px;
-  }
-  
-  .instructions {
-    margin-bottom: 20px;
-    font-size: 16px;
-    color: #555;
-  }
-  
-  .options {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .option-btn {
-    padding: 12px 24px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #2196f3;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .option-btn:hover {
-    background-color: #1976d2;
-  }
   </style>
   
