@@ -2,12 +2,11 @@
  .admin-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 91.8vh;
     background: url('/public/images/wallpaper.png') no-repeat center center;
     background-size: cover;
     color: #fff; /* Text color for better visibility on the background */
     position: relative;
-
   }
   
   /* Overlay to add a semi-transparent effect */
