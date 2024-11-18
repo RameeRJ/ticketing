@@ -86,10 +86,12 @@ export default {
         });
 
         if (user.user_type === 'admin') {
-          this.$router.push('/admin/home');
-        } else {
-          this.$router.push('/user/home');
-        }
+  this.$router.push('/admin/home'); // Redirect to admin's home
+} else if (user.user_type === 'user') {
+  this.$router.push('/user/home');  // Redirect to user's home
+} else {
+      this.$router.push('/login');
+    }
       } catch (error) {
         if (error.response && error.response.data.errors) {
           this.errors = error.response.data.errors;

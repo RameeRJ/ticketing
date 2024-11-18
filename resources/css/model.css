@@ -74,7 +74,7 @@ h2 {
 
 
 .add {
-  background-color: #001d66;
+  background-color: #00661a;
   color: white;
   border-color: #001d66;
   border-radius: 4px;
@@ -182,16 +182,16 @@ color: #666;
     gap: 10px;
   }
   .btn-add{
-    background: #001d66;
+    background: #4caf50;
     color: aliceblue;
   }
   .btn-add-secondary{
-    background: #001d6627;
-    color: #001d66;
+    background: #4caf4f77;
+    color: #000000;
   }
   .btn-add-close{
-    background: #001d6612;
-    color: #001d66;
+    background: #4caf4f77;
+    color: #000000;
   }
   
   .btn-add, .btn-add-secondary {
