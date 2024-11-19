@@ -47,13 +47,33 @@
             <label for="email">Email</label>
             <input type="email" id="email" v-model="form.email" required placeholder="Enter user's email"/>
           </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" v-model="form.password" required placeholder="Enter user's password"/>
+          
+      <div class="form-group">
+  <label for="password">Password</label>
+  <div class="password-wrapper">
+            <input  :type="pwd_type" id="password" v-model="form.password" required placeholder="Enter user's password"/>
+            <svg @click="togglePwdType" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" id="toggle-password" class="feather feather-eye"
+                      :class="{'eye-visible': pwd_type === 'text'}">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
           </div>
+          </div>
+
           <div class="form-group">
             <label for="confirmpassword">Confirm Password</label>
-            <input type="password" id="confirmpassword" v-model="form.password_confirmation" required placeholder="Confirm user's password"/>
+            <div class="password-wrapper">
+            <input :type="con_pwd_type" id="confirmpassword" v-model="form.password_confirmation" required placeholder="Confirm user's password"/>
+            <svg @click="toggleConPwdType" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" id="toggle-password" class="feather feather-eye"
+                      :class="{'eye-visible': con_pwd_type === 'text'}">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+          </div>
           </div>
           <div class="button-group">
             <button type="submit" class="btn btn-add">Submit</button>
@@ -78,12 +98,30 @@
       </div>
       <div class="form-group">
         <label for="password">Password</label>
+        <div class="password-wrapper">
 
-        <input type="password" id="password" v-model="editForm.password" placeholder="Leave blank to keep current password"/>
+        <input :type="pwd_type" id="password" v-model="editForm.password" placeholder="Leave blank to keep current password"/>
+        <svg @click="togglePwdType" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" id="toggle-password" class="feather feather-eye"
+                      :class="{'eye-visible': pwd_type === 'text'}">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+      </div>
       </div>
       <div class="form-group">
         <label for="confirmpassword">Confirm Password</label>
-        <input type="password" id="confirmpassword" v-model="editForm.password_confirmation" placeholder="Confirm new password (if updating)"/>
+        <div class="password-wrapper">
+        <input :type="con_pwd_type" id="confirmpassword" v-model="editForm.password_confirmation" placeholder="Confirm new password (if updating)"/>
+        <svg @click="toggleConPwdType" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" id="toggle-password" class="feather feather-eye"
+                      :class="{'eye-visible': con_pwd_type === 'text'}">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+      </div>
       </div>
       <div class="button-group">
         <button type="submit" class="btn btn-add">Save Changes</button>
@@ -107,6 +145,16 @@ const router = useRouter();
 const showAddUserModal = ref(false);
 const showEditUserModal = ref(false);
 const users = ref([]);
+const pwd_type = ref("password");
+const con_pwd_type = ref("password");
+
+
+const togglePwdType = () => {
+  pwd_type.value = pwd_type.value === "password" ? "text" : "password";
+};
+const toggleConPwdType = () => {
+  con_pwd_type.value = con_pwd_type.value === "password" ? "text" : "password";
+};
 
 // Form object for new user
 const form = ref({
@@ -314,5 +362,32 @@ onMounted(fetchUsers);
  .back-btn:hover {
    background-color: #4727da;
  }
+ .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center; /* Align items in the center vertically */
+  }
+  
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* Space for the eye icon */
+  }
+  
+  .password-wrapper svg {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s; /* Add smooth transition for color */
+  }
+  
+  .password-wrapper svg:hover {
+    color: #333;
+  }
+  .password-wrapper svg.eye-visible {
+    color: #007bff;  /* Change this color to your desired color when visible */
+  }
+  
+  
  </style>
  
