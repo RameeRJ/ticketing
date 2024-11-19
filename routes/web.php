@@ -13,3 +13,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/users/store', [AdminController::class, 'UserStore']);
 Route::post('/users',[AdminController::class, 'UserIndex']);
 Route::delete('/users/delete/{id}',[AdminController::class, 'UserDestroy']);
+Route::put('/users/update/{id}', [AdminController::class, 'UserUpdate']);

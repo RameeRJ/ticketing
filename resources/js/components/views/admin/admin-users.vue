@@ -26,7 +26,7 @@
                 
                 <td>
                       
-                  <button class="edit-btn">Edit</button>
+                  <button class="edit-btn" @click="openEditUserModal(user)">Edit</button>
                   <button class="delete-btn" @click="destroyUsers(user.id)">Delete</button>
                 </td>
               </tr>
@@ -40,19 +40,20 @@
         <form @submit.prevent="storeUser">
           <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" id="name" v-model="form.name" required />
+            
+            <input type="text" id="name" v-model="form.name" required placeholder="Enter user's name"/>
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" v-model="form.email" required />
+            <input type="email" id="email" v-model="form.email" required placeholder="Enter user's email"/>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" v-model="form.password" required />
+            <input type="password" id="password" v-model="form.password" required placeholder="Enter user's password"/>
           </div>
           <div class="form-group">
             <label for="confirmpassword">Confirm Password</label>
-            <input type="password" id="confirmpassword" v-model="form.password_confirmation" required />
+            <input type="password" id="confirmpassword" v-model="form.password_confirmation" required placeholder="Confirm user's password"/>
           </div>
           <div class="button-group">
             <button type="submit" class="btn btn-add">Submit</button>
@@ -62,6 +63,36 @@
         </form>
       </div>
     </div>
+
+    <div v-if="showEditUserModal" class="modal-backdrop">
+  <div class="modal-content">
+    <h3 class="center">Edit User</h3>
+    <form @submit.prevent="updateUser">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" v-model="editForm.name" required placeholder="Enter User name"/>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" v-model="editForm.email" required placeholder="Enter User email"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <input type="password" id="password" v-model="editForm.password" placeholder="Leave blank to keep current password"/>
+      </div>
+      <div class="form-group">
+        <label for="confirmpassword">Confirm Password</label>
+        <input type="password" id="confirmpassword" v-model="editForm.password_confirmation" placeholder="Confirm new password (if updating)"/>
+      </div>
+      <div class="button-group">
+        <button type="submit" class="btn btn-add">Save Changes</button>
+        <button type="button" class="btn btn-add-close" @click="showEditUserModal = false">Close</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -74,6 +105,7 @@ import Swal from "sweetalert2";
 
 const router = useRouter();
 const showAddUserModal = ref(false);
+const showEditUserModal = ref(false);
 const users = ref([]);
 
 // Form object for new user
@@ -84,6 +116,17 @@ const form = ref({
   password: "",
   password_confirmation: "",
 });
+const editForm = ref({
+  id: null,
+  name: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
+});
+const openEditUserModal = (user) => {
+  editForm.value = { ...user, password: "", password_confirmation: "" };
+  showEditUserModal.value = true;
+};
 
 const fetchUsers = async () => {
       try {
@@ -119,6 +162,29 @@ async function storeUser() {
         });
   }
 }
+const updateUser = async () => {
+  try {
+    await axios.put(`/users/update/${editForm.value.id}`, editForm.value);
+    Swal.fire({
+      icon: "success",
+      title: "User updated successfully",
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2000,
+    });
+    showEditUserModal.value = false;
+    fetchUsers();
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    Swal.fire({
+      icon: "error",
+      title: "Update failed",
+      text: error.response?.data?.message || "An error occurred. Please try again.",
+    });
+  }
+};
+
 const destroyUsers = async (usersId) => {
   Swal.fire({
     title: 'Are you sure?',

@@ -38,4 +38,32 @@ public function UserIndex()
     }
     }
 
+    public function UserUpdate(Request $request, $id)
+    {
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|min:8|confirmed',
+        ]);
+    
+        $user->name = $request->name;
+        $user->email = $request->email;
+    
+        // Update password only if provided
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+    
+        $user->save();
+    
+        return response()->json(['message' => 'User updated successfully']);
+    }
+    
+
 }
