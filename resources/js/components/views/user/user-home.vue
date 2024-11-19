@@ -2,9 +2,7 @@
   <Navbar />
   <div class="user-management-container">
     <div class="header-container">
-      <h2 class="section-heading">Submit a Ticket <br>   <span class="section-description">
-    Need help? Submit a ticket and our support team will get back to you as soon as possible.
-  </span> </h2>
+      <h2 class="section-description">Need help? <br> Submit a ticket and our support team will get back to you as soon as possible. <br> </h2>
     
       <button class="submit-ticket-btn" @click="showAddUserModal = true"><i class="fas fa-ticket-alt"></i> Submit Ticket</button>
     </div>
@@ -207,6 +205,7 @@ onMounted(fetchUsers);
  .user-table {
    width: 100%;
    border-collapse: collapse;
+   margin-top: 40px;
  }
  
  .user-table th, .user-table td {
@@ -259,8 +258,8 @@ onMounted(fetchUsers);
 }
 
 .section-description {
-  font-size: 16px;
-  margin-bottom: 15px;
+  font-size: 20px;
+  margin-bottom: 11px;
 }
 
 .submit-ticket-btn {
