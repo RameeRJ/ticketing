@@ -57,7 +57,7 @@
           <div class="button-group">
             <button type="submit" class="btn btn-add">Submit</button>
             <button type="reset" class="btn btn-add-secondary" @click="resetForm">Reset</button>
-            <button type="button" class="btn btn-add-secondary" @click="showAddUserModal = false">Close</button>
+            <button type="button" class="btn btn-add-close" @click="showAddUserModal = false">Close</button>
           </div>
         </form>
       </div>

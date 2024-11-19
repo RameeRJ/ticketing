@@ -1,103 +1,276 @@
 <template>
-    <div>
-       
-        <nav class="navbar"> 
-          <div class="navbar-container">
-           
-            <div class="brand-logo-container">
-              <img src="/public/images/logo.png" alt="DocBooker Logo" class="brand-logo" />
-             
-            </div>
-            <div class="profile-logout-container">
-              <button @click="logout" class="logout-btn">Logout</button>
-            </div>
-          </div>
-        </nav>
-        <div class="dashboard-content">
-        </div>
-      </div>
-    <div class="admin-container">
-  
-       
-  
-        <div class="overlay">
-          <div class="options-container">
-            <h1>Hello Admin!</h1>
-            <p class="instructions">
-              Please select an option below to manage users or handle tickets efficiently.
-            </p>
-            <div class="options">
-              <button @click="goToPage('user')" class="option-btn">User Management</button>
-              <button @click="goToPage('ticket')" class="option-btn">Ticket Management</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
+  <Navbar />
+  <div class="user-management-container">
+    <div class="header-container">
+      <h2 class="section-heading">Submit a Ticket <br>   <span class="section-description">
+    Need help? Submit a ticket and our support team will get back to you as soon as possible.
+  </span> </h2>
     
-    <script setup>
-  import { useRouter } from 'vue-router';
-  import Swal from 'sweetalert2';
-  import axios from 'axios';
-  
-  
-  const router = useRouter();
-  
-  
-  function goToPage(page) {
-    if (page === 'user') {
-      router.push('/admin/user'); 
-    } else if (page === 'ticket') {
-      router.push('/admin/ticket'); 
-    }
-  }
-  
-  
-  async function logout() {
-    try {
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will be logged out!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, log me out!',
-        cancelButtonText: 'Cancel',
-        padding: '1em',
-      });
-  
-      if (result.isConfirmed) {
-        await axios.post('/logout');
-        localStorage.clear();
-        router.push({ name: 'login' });
-        Swal.fire({
+      <button class="submit-ticket-btn" @click="showAddUserModal = true"><i class="fas fa-ticket-alt"></i> Submit Ticket</button>
+    </div>
+
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="users.length === 0">
+                <td colspan="6" class="text-center">No users available</td>
+              </tr>
+              <tr v-for="user in users" :key="user.id">
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                
+                <td>
+                      
+                  <button class="edit-btn">Edit</button>
+                  <button class="delete-btn" @click="destroyUsers(user.id)">Delete</button>
+                </td>
+              </tr>
+      </tbody>
+    </table>
+
+    <!-- Modal for Adding User -->
+    <div v-if="showAddUserModal" class="modal-backdrop">
+      <div class="modal-content">
+        <h3 class="center">Add New User</h3>
+        <form @submit.prevent="storeUser">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="form.name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="form.email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" v-model="form.password" required />
+          </div>
+          <div class="form-group">
+            <label for="confirmpassword">Confirm Password</label>
+            <input type="password" id="confirmpassword" v-model="form.password_confirmation" required />
+          </div>
+          <div class="button-group">
+            <button type="submit" class="btn btn-add">Submit</button>
+            <button type="reset" class="btn btn-add-secondary" @click="resetForm">Reset</button>
+            <button type="button" class="btn btn-add-close" @click="showAddUserModal = false">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import Navbar from "../../Layouts/Navbar.vue";
+import { useRouter } from "vue-router";
+import { ref,onMounted } from "vue";
+import axios from "axios"; 
+import Swal from "sweetalert2";
+
+const router = useRouter();
+const showAddUserModal = ref(false);
+const users = ref([]);
+
+// Form object for new user
+const form = ref({
+  name: "",
+  email: "",
+  phone: "",
+  password: "",
+  password_confirmation: "",
+});
+
+const fetchUsers = async () => {
+      try {
+        const response = await axios.post('/users');
+        users.value = response.data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        error.value = 'Failed to load users. Please try again.';
+      }
+    };
+
+// Method to handle form submission
+async function storeUser() {
+  try {
+    const response = await axios.post("/users/store", form.value); // Replace with your API endpoint
+    Swal.fire({
           icon: 'success',
-          title: 'Logged out successfully',
+          title: 'User registered successfully',
           toast: true,
           position: 'top-end',
           showConfirmButton: false,
           timer: 2000,
-          padding: '1em',
         });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Logout Failed',
-        text: 'There was an error logging you out. Please try again.',
-        padding: '1em',
-      });
-    }
+        showAddUserModal.value = false;
+        resetForm();
+        fetchUsers();
+  } catch (error) {
+    console.error(error.response?.data || error.message); // Log the error
+    Swal.fire({
+          icon: 'error',
+          title: 'Registration failed',
+          text: error.response?.data?.message || 'An error occurred. Please try again.',
+        });
   }
-  </script>
-    
-    <style scoped>
-  
-  @import "/resources/css/navbar.css";
-  @import "/resources/css/index.css";
-   
-    
-    
-    </style>
-    
+}
+const destroyUsers = async (usersId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        // Make the DELETE request
+        await axios.delete(`/users/delete/${usersId}`);
+        
+        // Fetch the updated user list
+        fetchUsers();
+        
+        // Show success notification
+        Swal.fire({
+          icon: 'success',
+          title: 'User removed successfully',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      } catch (error) {
+        console.error('Error removing user:', error);
+        Swal.fire('Error!', 'Failed to remove the user.', 'error');
+      }
+    }
+  });
+};
+
+function resetForm() {
+  form.value = {
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    password_confirmation: "",
+  };
+}
+
+
+function goBack() {
+  router.back();
+}
+
+onMounted(fetchUsers);
+
+</script>
+ 
+ <style scoped>
+ @import "/resources/css/model.css";
+ .user-management-container {
+   padding: 20px;
+   margin-top:30px;
+ }
+ 
+ .header-container {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 15px;
+ }
+ 
+ h1 {
+   margin: 0;
+ }
+ 
+ .add-user-btn {
+   background-color: #4caf50;
+   color: white;
+   border: none;
+   border-radius: 4px;
+   padding: 10px 20px;
+   cursor: pointer;
+ }
+ 
+ .user-table {
+   width: 100%;
+   border-collapse: collapse;
+ }
+ 
+ .user-table th, .user-table td {
+   border: 1px solid #ddd;
+   padding: 12px;
+   text-align: center;
+ }
+ 
+ .user-table th {
+   background-color: #f2f2f2;
+ 
+ }
+ 
+ .edit-btn, .delete-btn {
+   padding: 6px 12px;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   color: white;
+ }
+ 
+ .edit-btn {
+   background-color: #2196f3;
+   margin-right: 5px;
+ }
+ 
+ .delete-btn {
+   background-color: #f44336;
+ }
+ .back-btn {
+   background-color: #5138c4;
+   color: white;
+   border: none;
+   border-radius: 4px;
+   padding: 8px 16px;
+   cursor: pointer;
+   font-weight: bold;
+   margin-right: 15px;
+   transition: background-color 0.3s ease;
+ }
+ 
+ .back-btn:hover {
+   background-color: #4727da;
+ }
+
+ .section-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.section-description {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.submit-ticket-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+ </style>
+ 

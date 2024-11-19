@@ -186,12 +186,12 @@ color: #666;
     color: aliceblue;
   }
   .btn-add-secondary{
-    background: #4caf4f77;
-    color: #000000;
+    background: #2196f3;
+    color: #ffffff;
   }
   .btn-add-close{
-    background: #4caf4f77;
-    color: #000000;
+    background: #f44336;
+    color: #ffffff;
   }
   
   .btn-add, .btn-add-secondary {
