@@ -165,7 +165,7 @@ color: #666;
     margin-bottom: 5px;
   }
   
-  input {
+  input,select {
     width: 100%;
     padding: 8px;
     border: 1px solid #ced4da;

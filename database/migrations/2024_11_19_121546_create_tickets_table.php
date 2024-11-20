@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id') // Foreign key for the user
+            ->constrained('users') // References the `id` column on `users` table
+            ->onDelete('cascade'); 
             $table->string('issue'); // Column for the ticket issue
             $table->string('priority')->nullable(); // Priority, nullable
             $table->enum('status', ['pending', 'open', 'solved'])->default('pending'); // Enum status with default value

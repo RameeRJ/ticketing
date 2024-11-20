@@ -24,7 +24,7 @@ class TicketRequest extends FormRequest
             'priority' => 'nullable|string|in:low,medium,high', // Optional, must be one of the defined values
             'status' => 'nullable|in:pending,open,solved', // Optional, must be a valid enum value
             'feedback' => 'nullable|string', // Optional, any text input
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Optional, must be a valid image
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:204800', // Optional, must be a valid image
         ];
     }
 

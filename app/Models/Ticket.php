@@ -12,6 +12,7 @@ class Ticket extends Model
     use HasFactory,Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'issue',
         'priority',
         'status',
